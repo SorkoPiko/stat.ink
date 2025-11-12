@@ -151,7 +151,7 @@ $this->title = vsprintf('%s | %s', [
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">
-              <?= Icon::weapon() ?>
+              <?= Icon::s3Weapon(null) ?>
               <?= Html::encode(Yii::t('app', 'Weapon Usage')) ?>
             </h3>
           </div>
@@ -172,7 +172,7 @@ $this->title = vsprintf('%s | %s', [
                 <?php foreach (array_slice($player->weapon_stats, 0, 10) as $weapon): ?>
                   <tr>
                     <td>
-                      <?= Icon::weapon((string)($weapon['weapon_key'] ?? '')) ?>
+                      <?= Icon::s3Weapon((string)($weapon['weapon_key'] ?? '')) ?>
                       <?= Html::encode((string)($weapon['weapon_name'] ?? 'Unknown Weapon')) ?>
                     </td>
                     <td class="text-center">
@@ -211,7 +211,7 @@ $this->title = vsprintf('%s | %s', [
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">
-              <?= Icon::lobby() ?>
+              <?= Icon::s3Lobby(null) ?>
               <?= Html::encode(Yii::t('app', 'Lobby Statistics')) ?>
             </h3>
           </div>
@@ -229,7 +229,7 @@ $this->title = vsprintf('%s | %s', [
                 <?php foreach ($player->lobby_stats as $lobby): ?>
                   <tr>
                     <td>
-                      <?= Icon::lobby((string)($lobby['lobby_key'] ?? '')) ?>
+                      <?= Icon::s3Lobby((string)($lobby['lobby_key'] ?? '')) ?>
                       <?= Html::encode((string)($lobby['lobby_name'] ?? 'Unknown Lobby')) ?>
                     </td>
                     <td class="text-center">
