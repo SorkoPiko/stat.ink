@@ -101,12 +101,12 @@ final class UnregisteredPlayer3
             return null;
         }
 
-        Yii::info("Found player: {$name}#{$number} (ref_id: {$playerInfo['ref_id']})", __METHOD__);
-
         $refIdResult = (new Query())
             ->select(['ref_id' => 'calc_played_with3_id(:name, :number)'])
             ->addParams([':name' => $name, ':number' => $number])
             ->one();
+
+        Yii::info("Found player: {$name}#{$number} (ref_id: {$refIdResult['ref_id']})", __METHOD__);
 
         $player = new self();
         $player->ref_id = $refIdResult['ref_id'];
