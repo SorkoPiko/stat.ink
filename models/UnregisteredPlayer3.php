@@ -242,7 +242,11 @@ final class UnregisteredPlayer3
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
             ->andWhere(['not', ['{{%battle_player3}}.[[weapon_id]]' => null]])
-            ->groupBy('{{%battle_player3}}.[[weapon_id]]')
+            ->groupBy([
+                '{{%battle_player3}}.[[weapon_id]]',
+                '{{%weapon3}}.[[name]]',
+                '{{%weapon3}}.[[key]]'
+            ])
             ->orderBy(['battles' => SORT_DESC])
             ->all();
 
@@ -322,7 +326,11 @@ final class UnregisteredPlayer3
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
-            ->groupBy('{{%lobby3}}.[[id]]')
+            ->groupBy([
+                '{{%lobby3}}.[[id]]',
+                '{{%lobby3}}.[[key]]',
+                '{{%lobby3}}.[[name]]'
+            ])
             ->orderBy(['battles' => SORT_DESC])
             ->all();
 
