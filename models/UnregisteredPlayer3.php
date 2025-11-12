@@ -51,11 +51,17 @@ final class UnregisteredPlayer3
         $player = new self();
         $player->ref_id = $ref_id;
 
-        // Get basic info from any battle_played_with record
+        // Get basic info from any battle_player3 record where is_me = false
         $basicInfo = (new Query())
             ->select(['name', 'number'])
-            ->from('{{%battle3_played_with}}')
-            ->where(['ref_id' => $ref_id])
+            ->from('{{%battle_player3}}')
+            ->where(['and',
+                ['is_me' => false],
+                ['not', ['name' => null]],
+                ['not', ['number' => null]],
+                'calc_played_with3_id([[name]], [[number]]) = :ref_id'
+            ])
+            ->addParams([':ref_id' => $ref_id])
             ->limit(1)
             ->one();
 
@@ -82,28 +88,51 @@ final class UnregisteredPlayer3
     {
         Yii::info("Looking up unregistered player by splashtag: {$name}#{$number}", __METHOD__);
 
-        // Get player info from battle_played_with record
-        $playerInfo = (new Query())
-            ->select(['ref_id', 'name', 'number'])
-            ->from('{{%battle3_played_with}}')
+        // Look directly in battle_player3 table for this player
+        $playerExists = (new Query())
+            ->select(['name', 'number'])
+            ->from('{{%battle_player3}}')
+            ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
             ->where([
-                'name' => $name,
-                'number' => $number,
+                '{{%battle_player3}}.[[name]]' => $name,
+                '{{%battle_player3}}.[[number]]' => $number,
+                '{{%battle_player3}}.[[is_me]]' => false,
+                '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->limit(1)
             ->one();
 
-        if (!$playerInfo) {
+        if (!$playerExists) {
             Yii::warning("No player found with splashtag: {$name}#{$number}", __METHOD__);
+
+            // Debug: Show sample of available players
+            $samplePlayers = (new Query())
+                ->select(['name', 'number'])
+                ->from('{{%battle_player3}}')
+                ->where(['and',
+                    ['is_me' => false],
+                    ['not', ['name' => null]],
+                    ['not', ['number' => null]],
+                ])
+                ->limit(5)
+                ->all();
+            Yii::info("Sample players available: " . json_encode($samplePlayers), __METHOD__);
+
             return null;
         }
 
-        Yii::info("Found player: {$name}#{$number} (ref_id: {$playerInfo['ref_id']})", __METHOD__);
+        Yii::info("Found player: {$name}#{$number}", __METHOD__);
+
+        // Calculate ref_id using the database function
+        $refIdResult = (new Query())
+            ->select(['ref_id' => 'calc_played_with3_id(:name, :number)'])
+            ->addParams([':name' => $name, ':number' => $number])
+            ->one();
 
         $player = new self();
-        $player->ref_id = $playerInfo['ref_id'];
-        $player->name = $playerInfo['name'];
-        $player->number = $playerInfo['number'];
+        $player->ref_id = $refIdResult['ref_id'];
+        $player->name = $name;
+        $player->number = $number;
 
         // Load aggregated stats
         $player->loadAggregatedStats();
@@ -377,12 +406,12 @@ final class UnregisteredPlayer3
     {
         Yii::info("Checking data availability for unregistered players", __METHOD__);
 
-        // Check if battle3_played_with table has data
+        // Check if battle3_played_with table has data (this is only populated for registered users)
         $playedWithCount = (new Query())
             ->from('{{%battle3_played_with}}')
             ->count();
 
-        // Check if battle_player3 table has data for non-registered players
+        // Check if battle_player3 table has data for non-registered players (this is the main source)
         $battlePlayerCount = (new Query())
             ->from('{{%battle_player3}}')
             ->where(['is_me' => false])
@@ -394,18 +423,35 @@ final class UnregisteredPlayer3
             ->where(['is_deleted' => false])
             ->count();
 
-        // Sample of available player names
+        // Sample of available player names from battle_player3 (the actual source)
         $samplePlayers = (new Query())
-            ->select(['name', 'number', 'ref_id'])
-            ->from('{{%battle3_played_with}}')
+            ->select(['name', 'number'])
+            ->from('{{%battle_player3}}')
+            ->where(['and',
+                ['is_me' => false],
+                ['not', ['name' => null]],
+                ['not', ['number' => null]],
+            ])
             ->limit(5)
             ->all();
+
+        // Count unique players in battle_player3
+        $uniquePlayersCount = (new Query())
+            ->select(['COUNT(DISTINCT concat([[name]], \'#\', [[number]])) as unique_count'])
+            ->from('{{%battle_player3}}')
+            ->where(['and',
+                ['is_me' => false],
+                ['not', ['name' => null]],
+                ['not', ['number' => null]],
+            ])
+            ->scalar();
 
         $debug = [
             'battle3_played_with_count' => $playedWithCount,
             'battle_player3_non_me_count' => $battlePlayerCount,
+            'battle_player3_unique_players' => $uniquePlayersCount,
             'total_battles_count' => $totalBattles,
-            'sample_players' => $samplePlayers,
+            'sample_players_from_battle_player3' => $samplePlayers,
         ];
 
         Yii::info("Data availability: " . json_encode($debug), __METHOD__);
