@@ -178,13 +178,14 @@ final class UnregisteredPlayer3
             ->from('{{%battle_player3}}')
             ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
             ->innerJoin('{{%result3}}', '{{%battle3}}.[[result_id]] = {{%result3}}.[[id]]')
+            ->innerJoin('{{%lobby3}}', '{{%battle3}}.[[lobby_id]] = {{%lobby3}}.[[id]]')
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
                 '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
-                '{{%battle3}}.[[is_private]]' => false,
             ])
+            ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
             ->one();
 
         $this->total_battles = (int)($battleStats['battles'] ?? 0);
@@ -232,13 +233,14 @@ final class UnregisteredPlayer3
             ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
             ->innerJoin('{{%result3}}', '{{%battle3}}.[[result_id]] = {{%result3}}.[[id]]')
             ->innerJoin('{{%weapon3}}', '{{%battle_player3}}.[[weapon_id]] = {{%weapon3}}.[[id]]')
+            ->innerJoin('{{%lobby3}}', '{{%battle3}}.[[lobby_id]] = {{%lobby3}}.[[id]]')
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
                 '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
-                '{{%battle3}}.[[is_private]]' => false,
             ])
+            ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
             ->andWhere(['not', ['{{%battle_player3}}.[[weapon_id]]' => null]])
             ->groupBy('{{%battle_player3}}.[[weapon_id]]')
             ->orderBy(['battles' => SORT_DESC])
@@ -274,13 +276,14 @@ final class UnregisteredPlayer3
             ])
             ->from('{{%battle_player3}}')
             ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
+            ->innerJoin('{{%lobby3}}', '{{%battle3}}.[[lobby_id]] = {{%lobby3}}.[[id]]')
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
                 '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
-                '{{%battle3}}.[[is_private]]' => false,
             ])
+            ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
             ->andWhere(['not', ['{{%battle_player3}}.[[kill]]' => null]])
             ->one();
 
@@ -317,8 +320,8 @@ final class UnregisteredPlayer3
                 '{{%battle_player3}}.[[number]]' => $this->number,
                 '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
-                '{{%battle3}}.[[is_private]]' => false,
             ])
+            ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
             ->groupBy('{{%lobby3}}.[[id]]')
             ->orderBy(['battles' => SORT_DESC])
             ->all();
