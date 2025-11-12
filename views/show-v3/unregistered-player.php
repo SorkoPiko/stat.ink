@@ -39,7 +39,7 @@ $this->title = vsprintf('%s | %s', [
   <div class="row">
     <div class="col-xs-12">
       <h1>
-        <?= Icon::s3Player() ?>
+        <?= Icon::splatoon3() ?>
         <?= Html::encode($title) ?>
       </h1>
       <p class="text-muted">
