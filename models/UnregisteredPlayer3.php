@@ -363,6 +363,39 @@ final class UnregisteredPlayer3
     }
 
     /**
+     * Get kill ratio (kills/deaths)
+     */
+    public function getKillRatio(): ?float
+    {
+        $avgKill = (float)($this->performance_stats['avg_kill'] ?? 0);
+        $avgDeath = (float)($this->performance_stats['avg_death'] ?? 0);
+
+        if ($avgDeath == 0) {
+            return $avgKill > 0 ? null : 0.0; // null for infinity, 0 for N/A
+        }
+
+        return $avgKill / $avgDeath;
+    }
+
+    /**
+     * Get total kills across all battles
+     */
+    public function getTotalKills(): int
+    {
+        $avgKill = (float)($this->performance_stats['avg_kill'] ?? 0);
+        return (int)($avgKill * $this->total_battles);
+    }
+
+    /**
+     * Get total deaths across all battles
+     */
+    public function getTotalDeaths(): int
+    {
+        $avgDeath = (float)($this->performance_stats['avg_death'] ?? 0);
+        return (int)($avgDeath * $this->total_battles);
+    }
+
+    /**
      * Get most used weapon
      */
     public function getMostUsedWeapon(): ?array

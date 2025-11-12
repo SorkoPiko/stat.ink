@@ -77,7 +77,7 @@ $this->title = vsprintf('%s | %s', [
                 <?= $formatter->asPercent($player->getWinRate() / 100, 1) ?>
               </div>
               <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Win Rate')) ?>
+                <?= Html::encode(Yii::t('app', 'Win %')) ?>
               </div>
             </div>
           </div>
@@ -87,10 +87,19 @@ $this->title = vsprintf('%s | %s', [
           <div class="panel panel-default text-center">
             <div class="panel-body">
               <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asInteger($player->total_wins) ?>
+                <?php
+                $killRatio = $player->getKillRatio();
+                if ($killRatio === null) {
+                  echo '∞';
+                } elseif ($killRatio === 0.0 && empty($player->performance_stats)) {
+                  echo Html::encode(Yii::t('app', 'N/A'));
+                } else {
+                  echo $formatter->asDecimal($killRatio, 2);
+                }
+                ?>
               </div>
               <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Wins')) ?>
+                <?= Html::encode(Yii::t('app', 'Kill Ratio')) ?>
               </div>
             </div>
           </div>
@@ -110,41 +119,115 @@ $this->title = vsprintf('%s | %s', [
         </div>
       </div>
 
-      <!-- Performance Stats -->
-      <?php if (!empty($player->performance_stats)): ?>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">
-              <?= Icon::stats() ?>
-              <?= Html::encode(Yii::t('app', 'Average Performance')) ?>
-            </h3>
-          </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-xs-4 col-sm-2 text-center">
-                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_kill'] ?? 0, 1) ?></div>
-                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Kill')) ?></small>
+      <!-- Additional Overview Stats -->
+      <div class="row">
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asDecimal($player->performance_stats['avg_kill'] ?? 0, 1) ?>
               </div>
-              <div class="col-xs-4 col-sm-2 text-center">
-                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_death'] ?? 0, 1) ?></div>
-                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Death')) ?></small>
-              </div>
-              <div class="col-xs-4 col-sm-2 text-center">
-                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_assist'] ?? 0, 1) ?></div>
-                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Assist')) ?></small>
-              </div>
-              <div class="col-xs-4 col-sm-2 text-center">
-                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_special'] ?? 0, 1) ?></div>
-                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Special')) ?></small>
-              </div>
-              <div class="col-xs-4 col-sm-2 text-center">
-                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_inked'] ?? 0, 0) ?></div>
-                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Inked')) ?></small>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Avg Kills')) ?>
               </div>
             </div>
           </div>
         </div>
-      <?php endif ?>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asDecimal($player->performance_stats['avg_death'] ?? 0, 1) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Avg Deaths')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asInteger($player->getTotalKills()) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Total Kills')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asInteger($player->getTotalDeaths()) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Total Deaths')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extended Performance Stats -->
+      <div class="row">
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asDecimal($player->performance_stats['avg_assist'] ?? 0, 1) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Avg Assists')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asDecimal($player->performance_stats['avg_special'] ?? 0, 1) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Avg Specials')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asInteger($player->performance_stats['max_kill'] ?? 0) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Max Kills')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asDecimal($player->performance_stats['avg_inked'] ?? 0, 0) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Avg Inked')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Weapon Usage -->
       <?php if (!empty($player->weapon_stats)): ?>
@@ -161,7 +244,7 @@ $this->title = vsprintf('%s | %s', [
                 <tr>
                   <th><?= Html::encode(Yii::t('app', 'Weapon')) ?></th>
                   <th class="text-center"><?= Html::encode(Yii::t('app', 'Battles')) ?></th>
-                  <th class="text-center"><?= Html::encode(Yii::t('app', 'Win Rate')) ?></th>
+                  <th class="text-center"><?= Html::encode(Yii::t('app', 'Win %')) ?></th>
                   <th class="text-center"><?= Html::encode(Yii::t('app', 'Avg K')) ?></th>
                   <th class="text-center"><?= Html::encode(Yii::t('app', 'Avg D')) ?></th>
                   <th class="text-center"><?= Html::encode(Yii::t('app', 'Avg A')) ?></th>
