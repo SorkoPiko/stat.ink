@@ -265,6 +265,48 @@ $this->title = vsprintf('%s | %s', [
         </div>
       <?php endif ?>
 
+        <!-- Teammate Stats -->
+        <?php if (!empty($player->teammate_stats)): ?>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <?= Html::encode(Yii::t('app', 'Most Common Teammates')) ?>
+              </h3>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th><?= Html::encode(Yii::t('app', 'Splashtag')) ?></th>
+                    <th class="text-center"><?= Html::encode(Yii::t('app', 'Battles Together')) ?></th>
+                    <th class="text-center"><?= Html::encode(Yii::t('app', 'Win Rate Together')) ?></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($player->teammate_stats as $teammate): ?>
+                    <tr>
+                      <td>
+                        <?= Html::encode(sprintf('%s#%s', (string)($teammate['teammate_name'] ?? '???'), (string)($teammate['teammate_number'] ?? '????'))) ?>
+                      </td>
+                      <td class="text-center">
+                        <?= $formatter->asInteger((int)($teammate['battles_together'] ?? 0)) ?>
+                      </td>
+                      <td class="text-center">
+                        <?php
+                        $battles = (int)($teammate['battles_together'] ?? 0);
+                        $wins = (int)($teammate['wins_together'] ?? 0);
+                        $winRate = $battles > 0 ? ($wins / $battles) * 100 : 0;
+                        echo $formatter->asPercent($winRate / 100, 1);
+                        ?>
+                      </td>
+                    </tr>
+                  <?php endforeach ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <?php endif ?>
+
     </div>
     
     <div class="col-xs-12 col-sm-4 col-lg-3">
