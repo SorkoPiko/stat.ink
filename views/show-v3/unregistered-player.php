@@ -164,7 +164,6 @@ $this->title = vsprintf('%s | %s', [
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">
-              <?= Icon::s3Weapon(null) ?>
               <?= Html::encode(Yii::t('app', 'Weapon Usage')) ?>
             </h3>
           </div>
@@ -224,7 +223,6 @@ $this->title = vsprintf('%s | %s', [
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">
-              <?= Icon::s3Lobby(null) ?>
               <?= Html::encode(Yii::t('app', 'Lobby Statistics')) ?>
             </h3>
           </div>
