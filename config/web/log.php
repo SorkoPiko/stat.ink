@@ -26,5 +26,18 @@ return [
                 ],
             ),
         ],
+        // Add debug logging for unregistered players
+        [
+            'class' => FileTarget::class,
+            'levels' => ['info', 'warning', 'error'],
+            'categories' => [
+                'app\models\UnregisteredPlayer3::*',
+                'app\actions\show\v3\UnregisteredPlayerSearchAction::*',
+                'app\actions\show\v3\UnregisteredPlayerAction::*',
+            ],
+            'logFile' => '@runtime/logs/unregistered-players.log',
+            'maxFileSize' => 10240, // 10MB
+            'maxLogFiles' => 5,
+        ],
     ],
 ];
