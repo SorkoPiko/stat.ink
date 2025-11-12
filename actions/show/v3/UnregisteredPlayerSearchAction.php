@@ -28,7 +28,7 @@ final class UnregisteredPlayerSearchAction extends Action
 
         // If form was submitted with a splashtag, try to find the player
         if ($request->isPost && $splashtag) {
-            $player = UnregisteredPlayer3::findBySpashtagString($splashtag);
+            $player = UnregisteredPlayer3::findBySplashtagString($splashtag);
             
             if ($player && $player->hasSignificantData()) {
                 // Redirect to the player's page using ref_id

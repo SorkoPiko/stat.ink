@@ -66,8 +66,10 @@ $this->title = vsprintf('%s | %s', [
           <?php $form = ActiveForm::begin([
             'method' => 'post',
             'options' => ['class' => 'form-horizontal'],
-            'fieldConfig' => ['template' => '{label}<div class="col-sm-9">{input}{error}</div>'],
-            'labelOptions' => ['class' => 'col-sm-3 control-label'],
+            'fieldConfig' => [
+              'template' => '{label}<div class="col-sm-9">{input}{error}</div>',
+              'labelOptions' => ['class' => 'col-sm-3 control-label'],
+            ],
           ]); ?>
           
           <div class="form-group">
