@@ -13,6 +13,7 @@ use app\models\Battle3;
 use app\models\Battle3PlayedWith;
 use app\models\BattlePlayer3;
 use app\models\BattleTricolorPlayer3;
+use app\models\UnregisteredPlayer3;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -66,14 +67,18 @@ $playerNameContent = trim(
 // Add link to unregistered player stats if possible
 if (!$player->is_me && $player->name && $player->number) {
   $splashtag = $player->name . '#' . $player->number;
-  $playerNameContent = Html::a(
-    $playerNameContent,
-    ['unregistered-player-v3/by-splashtag/' . $splashtag],
-    [
-      'title' => Yii::t('app', 'View stats for {name}', ['name' => $player->name]),
-      'class' => 'text-decoration-none',
-    ]
-  );
+  $unregisteredPlayer = UnregisteredPlayer3::findBySplashtagString($splashtag);
+
+  if ($unregisteredPlayer && $unregisteredPlayer->hasSignificantData()) {
+    $playerNameContent = Html::a(
+      $playerNameContent,
+      ['unregistered-player-v3/by-splashtag/' . urlencode($splashtag)],
+      [
+        'title' => Yii::t('app', 'View stats for {name}', ['name' => $player->name]),
+        'class' => 'text-decoration-none',
+      ]
+    );
+  }
 }
 
 echo Html::tag('div', $playerNameContent);
