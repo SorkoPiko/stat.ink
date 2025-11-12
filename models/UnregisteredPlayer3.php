@@ -12,10 +12,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
 
-use function array_map;
-use function array_merge;
 use function count;
 use function explode;
 use function implode;
@@ -76,7 +73,6 @@ final class UnregisteredPlayer3
             ->where([
                 '{{%battle_player3}}.[[name]]' => $name,
                 '{{%battle_player3}}.[[number]]' => $number,
-//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->limit(1)
@@ -151,7 +147,6 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -197,7 +192,6 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -236,7 +230,6 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -270,7 +263,6 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])

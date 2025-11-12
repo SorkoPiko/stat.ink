@@ -174,60 +174,41 @@ $this->title = vsprintf('%s | %s', [
         </div>
       </div>
 
-      <!-- Extended Performance Stats -->
-      <div class="row">
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asDecimal($player->performance_stats['avg_assist'] ?? 0, 1) ?>
+      <!-- Performance Stats -->
+      <?php if (!empty($player->performance_stats)): ?>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <?= Icon::stats() ?>
+              <?= Html::encode(Yii::t('app', 'Average Performance')) ?>
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_kill'] ?? 0, 1) ?></div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Kill')) ?></small>
               </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Avg Assists')) ?>
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_death'] ?? 0, 1) ?></div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Death')) ?></small>
+              </div>
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_assist'] ?? 0, 1) ?></div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Assist')) ?></small>
+              </div>
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_special'] ?? 0, 1) ?></div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Special')) ?></small>
+              </div>
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_inked'] ?? 0, 0) ?></div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Inked')) ?></small>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asDecimal($player->performance_stats['avg_special'] ?? 0, 1) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Avg Specials')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asInteger($player->performance_stats['max_kill'] ?? 0) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Max Kills')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asDecimal($player->performance_stats['avg_inked'] ?? 0, 0) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Avg Inked')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <?php endif ?>
 
       <!-- Weapon Usage -->
       <?php if (!empty($player->weapon_stats)): ?>
