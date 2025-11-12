@@ -32,8 +32,7 @@ final class UnregisteredPlayerSearchAction extends Action
             if ($player) {
                 if ($player->hasSignificantData()) {
                     return $this->controller->redirect([
-                        'show-v3/unregistered-player',
-                        'ref_id' => $player->ref_id
+                        '/unregistered-player-v3/by-splashtag/' . urlencode($splashtag)
                     ]);
                 } else {
                     $errorMsg = Yii::t('app', 'Player found but has insufficient data (less than 5 battles). Found {battles} battles.', [
