@@ -57,7 +57,7 @@ $this->title = vsprintf('%s | %s', [
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">
-            <?= Icon::s3Player() ?>
+            <?= Icon::splatoon3() ?>
             <?= Html::encode(Yii::t('app', 'Player Search')) ?>
           </h3>
         </div>
