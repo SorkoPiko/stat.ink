@@ -81,6 +81,18 @@ $this->title = vsprintf('%s | %s', [
           </div>
         </div>
 
+        <div class="col-xs-6 col-sm-3">
+          <div class="panel panel-default text-center">
+            <div class="panel-body">
+              <div style="font-size: 2em; font-weight: bold;">
+                <?= $formatter->asInteger($player->total_wins) ?>
+              </div>
+              <div class="text-muted">
+                <?= Html::encode(Yii::t('app', 'Wins')) ?>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="col-xs-6 col-sm-3">
           <div class="panel panel-default text-center">
