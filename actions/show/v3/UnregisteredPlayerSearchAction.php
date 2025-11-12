@@ -58,7 +58,7 @@ final class UnregisteredPlayerSearchAction extends Action
                 }
             } else {
                 Yii::$app->session->setFlash('error',
-                    Yii::t('app', 'Player not found. Please check the exact format: Username#1234. Player must have appeared in at least 5 public battles.')
+                    Yii::t('app', 'Player not found. Please check the exact format: Username#1234.')
                 );
             }
         }
