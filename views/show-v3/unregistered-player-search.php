@@ -64,7 +64,7 @@ $this->title = vsprintf('%s | %s', [
         <div class="panel-body">
           
           <?php $form = ActiveForm::begin([
-            'method' => 'post',
+            'method' => 'get',
             'options' => ['class' => 'form-horizontal'],
             'fieldConfig' => [
               'template' => '{label}<div class="col-sm-9">{input}{error}</div>',
@@ -140,10 +140,6 @@ $this->title = vsprintf('%s | %s', [
             <li>
               <code>/unregistered-player-v3/by-splashtag/Username%231234</code><br>
               <span class="text-muted"><?= Html::encode(Yii::t('app', 'Replace Username#1234 with the actual splashtag (URL-encoded)')) ?></span>
-            </li>
-            <li>
-              <code>/unregistered-player-v3/[32-character-ref-id]</code><br>
-              <span class="text-muted"><?= Html::encode(Yii::t('app', 'If you have the ref_id from the player display')) ?></span>
             </li>
           </ul>
         </div>

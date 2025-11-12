@@ -42,47 +42,10 @@ final class UnregisteredPlayer3
     public array $lobby_stats = [];
 
     /**
-     * Find an unregistered player by ref_id
-     */
-    public static function findByRefId(string $ref_id): ?self
-    {
-        Yii::info("Looking up unregistered player by ref_id: {$ref_id}", __METHOD__);
-
-        $player = new self();
-        $player->ref_id = $ref_id;
-
-        // Get basic info from any battle_played_with record
-        $basicInfo = (new Query())
-            ->select(['name', 'number'])
-            ->from('{{%battle3_played_with}}')
-            ->where(['ref_id' => $ref_id])
-            ->limit(1)
-            ->one();
-
-        if (!$basicInfo) {
-            Yii::warning("No player found with ref_id: {$ref_id}", __METHOD__);
-            return null;
-        }
-
-        Yii::info("Found player: {$basicInfo['name']}#{$basicInfo['number']} (ref_id: {$ref_id})", __METHOD__);
-
-        $player->name = $basicInfo['name'];
-        $player->number = $basicInfo['number'];
-
-        // Load aggregated stats
-        $player->loadAggregatedStats();
-
-        return $player;
-    }
-
-    /**
      * Find an unregistered player by name and number (splashtag)
      */
     public static function findBySplashtag(string $name, string $number): ?self
     {
-        Yii::info("Looking up unregistered player by splashtag: {$name}#{$number}", __METHOD__);
-
-        // Get player info from battle_played_with record
         $playerInfo = (new Query())
             ->select(['name', 'number'])
             ->from('{{%battle_player3}}')
@@ -90,14 +53,13 @@ final class UnregisteredPlayer3
             ->where([
                 '{{%battle_player3}}.[[name]]' => $name,
                 '{{%battle_player3}}.[[number]]' => $number,
-                '{{%battle_player3}}.[[is_me]]' => false,
+//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->limit(1)
             ->one();
 
         if (!$playerInfo) {
-            Yii::warning("No player found with splashtag: {$name}#{$number}", __METHOD__);
             return null;
         }
 
@@ -106,14 +68,11 @@ final class UnregisteredPlayer3
             ->addParams([':name' => $name, ':number' => $number])
             ->one();
 
-        Yii::info("Found player: {$name}#{$number} (ref_id: {$refIdResult['ref_id']})", __METHOD__);
-
         $player = new self();
         $player->ref_id = $refIdResult['ref_id'];
         $player->name = $playerInfo['name'];
         $player->number = $playerInfo['number'];
 
-        // Load aggregated stats
         $player->loadAggregatedStats();
 
         return $player;
@@ -125,31 +84,21 @@ final class UnregisteredPlayer3
      */
     public static function findBySplashtagString(string $splashtag): ?self
     {
-        Yii::info("Parsing splashtag string: '{$splashtag}'", __METHOD__);
-
-        // Clean up the input and split by #
         $splashtag = trim($splashtag);
         $parts = explode('#', $splashtag, 2);
         
         if (count($parts) !== 2) {
-            Yii::warning("Invalid splashtag format: '{$splashtag}' - expected format: 'username#1234'", __METHOD__);
             return null;
         }
 
         $name = trim($parts[0]);
         $number = trim($parts[1]);
 
-        Yii::info("Parsed splashtag: name='{$name}', number='{$number}'", __METHOD__);
-
-        // Basic validation
         if (empty($name) || empty($number)) {
-            Yii::warning("Empty name or number after parsing: name='{$name}', number='{$number}'", __METHOD__);
             return null;
         }
 
-        // Validate number format (should be numeric)
         if (!preg_match('/^\d+$/', $number)) {
-            Yii::warning("Invalid number format: '{$number}' - must be numeric", __METHOD__);
             return null;
         }
 
@@ -161,9 +110,6 @@ final class UnregisteredPlayer3
      */
     private function loadAggregatedStats(): void
     {
-        Yii::info("Loading aggregated stats for player: {$this->name}#{$this->number}", __METHOD__);
-
-        // Get battle statistics - only from public battles
         $battleStats = (new Query())
             ->select([
                 'battles' => 'COUNT(*)',
@@ -182,7 +128,7 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-                '{{%battle_player3}}.[[is_me]]' => false,
+//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -192,15 +138,8 @@ final class UnregisteredPlayer3
         $this->total_wins = (int)($battleStats['wins'] ?? 0);
         $this->total_disconnects = (int)($battleStats['disconnects'] ?? 0);
 
-        Yii::info("Battle stats loaded: battles={$this->total_battles}, wins={$this->total_wins}, disconnects={$this->total_disconnects}", __METHOD__);
-
-        // Load weapon usage statistics
         $this->loadWeaponStats();
-
-        // Load performance statistics  
         $this->loadPerformanceStats();
-
-        // Load lobby statistics
         $this->loadLobbyStats();
     }
 
@@ -209,8 +148,6 @@ final class UnregisteredPlayer3
      */
     private function loadWeaponStats(): void
     {
-        Yii::info("Loading weapon stats for player: {$this->name}#{$this->number}", __METHOD__);
-
         $weaponQuery = (new Query())
             ->select([
                 'weapon_id' => '{{%battle_player3}}.[[weapon_id]]',
@@ -237,7 +174,7 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-                '{{%battle_player3}}.[[is_me]]' => false,
+//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -251,12 +188,6 @@ final class UnregisteredPlayer3
             ->all();
 
         $this->weapon_stats = $weaponQuery;
-
-        Yii::info("Loaded weapon stats: " . count($this->weapon_stats) . " weapons found", __METHOD__);
-        if (!empty($this->weapon_stats)) {
-            $topWeapon = $this->weapon_stats[0];
-            Yii::info("Top weapon: {$topWeapon['weapon_name']} ({$topWeapon['battles']} battles)", __METHOD__);
-        }
     }
 
     /**
@@ -264,8 +195,6 @@ final class UnregisteredPlayer3
      */
     private function loadPerformanceStats(): void
     {
-        Yii::info("Loading performance stats for player: {$this->name}#{$this->number}", __METHOD__);
-
         $performanceQuery = (new Query())
             ->select([
                 'avg_kill' => 'AVG({{%battle_player3}}.[[kill]])',
@@ -284,7 +213,7 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-                '{{%battle_player3}}.[[is_me]]' => false,
+//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -292,8 +221,6 @@ final class UnregisteredPlayer3
             ->one();
 
         $this->performance_stats = $performanceQuery ?: [];
-
-        Yii::info("Performance stats loaded: " . json_encode($this->performance_stats), __METHOD__);
     }
 
     /**
@@ -301,8 +228,6 @@ final class UnregisteredPlayer3
      */
     private function loadLobbyStats(): void
     {
-        Yii::info("Loading lobby stats for player: {$this->name}#{$this->number}", __METHOD__);
-
         $lobbyQuery = (new Query())
             ->select([
                 'lobby_key' => '{{%lobby3}}.[[key]]',
@@ -322,7 +247,7 @@ final class UnregisteredPlayer3
             ->andWhere([
                 '{{%battle_player3}}.[[name]]' => $this->name,
                 '{{%battle_player3}}.[[number]]' => $this->number,
-                '{{%battle_player3}}.[[is_me]]' => false,
+//                '{{%battle_player3}}.[[is_me]]' => false,
                 '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->andWhere(['not', ['{{%lobby3}}.[[key]]' => 'private']])
@@ -335,11 +260,6 @@ final class UnregisteredPlayer3
             ->all();
 
         $this->lobby_stats = $lobbyQuery;
-
-        Yii::info("Loaded lobby stats: " . count($this->lobby_stats) . " lobbies found", __METHOD__);
-        foreach ($this->lobby_stats as $lobby) {
-            Yii::info("Lobby {$lobby['lobby_name']}: {$lobby['battles']} battles, {$lobby['wins']} wins", __METHOD__);
-        }
     }
 
     /**
@@ -371,7 +291,7 @@ final class UnregisteredPlayer3
         $avgDeath = (float)($this->performance_stats['avg_death'] ?? 0);
 
         if ($avgDeath == 0) {
-            return $avgKill > 0 ? null : 0.0; // null for infinity, 0 for N/A
+            return $avgKill > 0 ? null : 99.99;
         }
 
         return $avgKill / $avgDeath;
@@ -408,7 +328,7 @@ final class UnregisteredPlayer3
      */
     public function hasSignificantData(): bool
     {
-        return $this->total_battles >= 5; // Require at least 5 battles for meaningful stats
+        return $this->total_battles >= 5;
     }
 
     /**
@@ -420,48 +340,5 @@ final class UnregisteredPlayer3
             $this->name ?? '???',
             $this->number ?? '????',
         ]);
-    }
-
-    /**
-     * Debug method to check data availability in the database
-     */
-    public static function debugDataAvailability(): array
-    {
-        Yii::info("Checking data availability for unregistered players", __METHOD__);
-
-        // Check if battle3_played_with table has data
-        $playedWithCount = (new Query())
-            ->from('{{%battle3_played_with}}')
-            ->count();
-
-        // Check if battle_player3 table has data for non-registered players
-        $battlePlayerCount = (new Query())
-            ->from('{{%battle_player3}}')
-            ->where(['is_me' => false])
-            ->count();
-
-        // Check total battles
-        $totalBattles = (new Query())
-            ->from('{{%battle3}}')
-            ->where(['is_deleted' => false])
-            ->count();
-
-        // Sample of available player names
-        $samplePlayers = (new Query())
-            ->select(['name', 'number', 'ref_id'])
-            ->from('{{%battle3_played_with}}')
-            ->limit(5)
-            ->all();
-
-        $debug = [
-            'battle3_played_with_count' => $playedWithCount,
-            'battle_player3_non_me_count' => $battlePlayerCount,
-            'total_battles_count' => $totalBattles,
-            'sample_players' => $samplePlayers,
-        ];
-
-        Yii::info("Data availability: " . json_encode($debug), __METHOD__);
-
-        return $debug;
     }
 }
