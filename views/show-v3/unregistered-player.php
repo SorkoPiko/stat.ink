@@ -83,27 +83,6 @@ $this->title = vsprintf('%s | %s', [
           </div>
         </div>
 
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?php
-                $killRatio = $player->getKillRatio();
-                if ($killRatio === null) {
-                  echo '∞';
-                } elseif ($killRatio === 0.0 && empty($player->performance_stats)) {
-                  echo Html::encode(Yii::t('app', 'N/A'));
-                } else {
-                  echo $formatter->asDecimal($killRatio, 2);
-                }
-                ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Kill Ratio')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div class="col-xs-6 col-sm-3">
           <div class="panel panel-default text-center">
@@ -120,33 +99,6 @@ $this->title = vsprintf('%s | %s', [
       </div>
 
       <!-- Additional Overview Stats -->
-      <div class="row">
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asDecimal($player->performance_stats['avg_kill'] ?? 0, 1) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Avg Kills')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asDecimal($player->performance_stats['avg_death'] ?? 0, 1) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Avg Deaths')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="col-xs-6 col-sm-3">
           <div class="panel panel-default text-center">
             <div class="panel-body">
@@ -192,6 +144,21 @@ $this->title = vsprintf('%s | %s', [
               <div class="col-xs-4 col-sm-2 text-center">
                 <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_death'] ?? 0, 1) ?></div>
                 <small class="text-muted"><?= Html::encode(Yii::t('app', 'Avg Death')) ?></small>
+              </div>
+              <div class="col-xs-4 col-sm-2 text-center">
+                <div class="h4">
+                  <?php
+                  $killRatio = $player->getKillRatio();
+                  if ($killRatio === null) {
+                    echo '∞';
+                  } elseif ($killRatio === 0.0 && empty($player->performance_stats)) {
+                    echo Html::encode(Yii::t('app', 'N/A'));
+                  } else {
+                    echo $formatter->asDecimal($killRatio, 2);
+                  }
+                  ?>
+                </div>
+                <small class="text-muted"><?= Html::encode(Yii::t('app', 'Kill Ratio')) ?></small>
               </div>
               <div class="col-xs-4 col-sm-2 text-center">
                 <div class="h4"><?= $formatter->asDecimal($player->performance_stats['avg_assist'] ?? 0, 1) ?></div>
