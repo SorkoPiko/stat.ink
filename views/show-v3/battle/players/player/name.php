@@ -64,10 +64,11 @@ $playerNameContent = trim(
 );
 
 // Add link to unregistered player stats if possible
-if (!$player->is_me && $player->name && $player->number && $history) {
+if (!$player->is_me && $player->name && $player->number) {
+  $splashtag = $player->name . '#' . $player->number;
   $playerNameContent = Html::a(
     $playerNameContent,
-    ['show-v3/unregistered-player', 'ref_id' => $history->ref_id],
+    ['show-v3/unregistered-player/by-splashtag' . $splashtag],
     [
       'title' => Yii::t('app', 'View stats for {name}', ['name' => $player->name]),
       'class' => 'text-decoration-none',
