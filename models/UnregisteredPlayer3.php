@@ -42,6 +42,29 @@ final class UnregisteredPlayer3
     public array $lobby_stats = [];
 
     /**
+     * Check if a player with given splashtag is actually registered and get their username
+     * Returns the username if registered, null if unregistered
+     */
+    public static function getRegisteredUsername(string $name, string $number): ?string
+    {
+        $userQuery = (new Query())
+            ->select(['screen_name' => '{{%user}}.[[screen_name]]'])
+            ->from('{{%battle_player3}}')
+            ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
+            ->innerJoin('{{%user}}', '{{%battle3}}.[[user_id]] = {{%user}}.[[id]]')
+            ->where([
+                '{{%battle_player3}}.[[name]]' => $name,
+                '{{%battle_player3}}.[[number]]' => $number,
+                '{{%battle_player3}}.[[is_me]]' => true,
+                '{{%battle3}}.[[is_deleted]]' => false,
+            ])
+            ->limit(1)
+            ->one();
+
+        return $userQuery['screen_name'] ?? null;
+    }
+
+    /**
      * Find an unregistered player by name and number (splashtag)
      */
     public static function findBySplashtag(string $name, string $number): ?self

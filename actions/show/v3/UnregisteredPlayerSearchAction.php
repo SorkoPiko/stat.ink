@@ -16,6 +16,9 @@ use yii\base\Action;
 use yii\helpers\Url;
 use yii\web\Response;
 
+use function count;
+use function explode;
+use function preg_match;
 use function trim;
 use function urlencode;
 
@@ -27,6 +30,19 @@ final class UnregisteredPlayerSearchAction extends Action
         $splashtag = trim((string)$request->get('splashtag'));
 
         if ($splashtag) {
+            $parts = explode('#', trim($splashtag), 2);
+            if (count($parts) === 2) {
+                $name = trim($parts[0]);
+                $number = trim($parts[1]);
+
+                if (!empty($name) && !empty($number) && preg_match('/^\d+$/', $number)) {
+                    $registeredUsername = UnregisteredPlayer3::getRegisteredUsername($name, $number);
+                    if ($registeredUsername) {
+                        return $this->controller->redirect(['/@' . $registeredUsername . '/spl3/']);
+                    }
+                }
+            }
+
             $player = UnregisteredPlayer3::findBySplashtagString($splashtag);
             
             if ($player) {
