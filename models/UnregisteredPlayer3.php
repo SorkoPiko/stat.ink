@@ -464,18 +464,6 @@ final class UnregisteredPlayer3
     }
 
     /**
-     * Get total battles with all teammates combined
-     */
-    public function getTotalBattlesWithTeammates(): int
-    {
-        $total = 0;
-        foreach ($this->teammate_stats as $teammate) {
-            $total += (int)$teammate['battles_together'];
-        }
-        return $total;
-    }
-
-    /**
      * Check if player has enough data to show meaningful stats
      */
     public function hasSignificantData(): bool
