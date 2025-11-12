@@ -68,7 +68,7 @@ if (!$player->is_me && $player->name && $player->number) {
   $splashtag = $player->name . '#' . $player->number;
   $playerNameContent = Html::a(
     $playerNameContent,
-    ['show-v3/unregistered-player/by-splashtag' . $splashtag],
+    ['unregistered-player-v3/by-splashtag/' . $splashtag],
     [
       'title' => Yii::t('app', 'View stats for {name}', ['name' => $player->name]),
       'class' => 'text-decoration-none',
