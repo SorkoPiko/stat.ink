@@ -48,22 +48,34 @@ if ($title) {
   );
 }
 
-echo Html::tag(
-  'div',
-  trim(
-    vsprintf('%s %s %s', [
-      Icon::s3Species($player->species),
-      Html::encode($player->name),
-      $player->number !== null
-        ? Html::tag(
-          'span',
-          sprintf('#%s', $player->number),
-          ['class' => 'text-muted small'],
-        )
-        : '',
-    ]),
-  ),
+// Create player name with optional link to stats
+$playerNameContent = trim(
+  vsprintf('%s %s %s', [
+    Icon::s3Species($player->species),
+    Html::encode($player->name),
+    $player->number !== null
+      ? Html::tag(
+        'span',
+        sprintf('#%s', $player->number),
+        ['class' => 'text-muted small'],
+      )
+      : '',
+  ]),
 );
+
+// Add link to unregistered player stats if possible
+if (!$player->is_me && $player->name && $player->number && $history) {
+  $playerNameContent = Html::a(
+    $playerNameContent,
+    ['show-v3/unregistered-player', 'ref_id' => $history->ref_id],
+    [
+      'title' => Yii::t('app', 'View stats for {name}', ['name' => $player->name]),
+      'class' => 'text-decoration-none',
+    ]
+  );
+}
+
+echo Html::tag('div', $playerNameContent);
 
 if ($history?->count > 1) {
   echo Html::tag(
