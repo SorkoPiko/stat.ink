@@ -84,11 +84,14 @@ final class UnregisteredPlayer3
 
         // Get player info from battle_played_with record
         $playerInfo = (new Query())
-            ->select(['ref_id', 'name', 'number'])
-            ->from('{{%battle3_played_with}}')
+            ->select(['name', 'number'])
+            ->from('{{%battle_player3}}')
+            ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
             ->where([
-                'name' => $name,
-                'number' => $number,
+                '{{%battle_player3}}.[[name]]' => $name,
+                '{{%battle_player3}}.[[number]]' => $number,
+                '{{%battle_player3}}.[[is_me]]' => false,
+                '{{%battle3}}.[[is_deleted]]' => false,
             ])
             ->limit(1)
             ->one();
@@ -100,8 +103,13 @@ final class UnregisteredPlayer3
 
         Yii::info("Found player: {$name}#{$number} (ref_id: {$playerInfo['ref_id']})", __METHOD__);
 
+        $refIdResult = (new Query())
+            ->select(['ref_id' => 'calc_played_with3_id(:name, :number)'])
+            ->addParams([':name' => $name, ':number' => $number])
+            ->one();
+
         $player = new self();
-        $player->ref_id = $playerInfo['ref_id'];
+        $player->ref_id = $refIdResult['ref_id'];
         $player->name = $playerInfo['name'];
         $player->number = $playerInfo['number'];
 
