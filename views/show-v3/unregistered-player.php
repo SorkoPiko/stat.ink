@@ -96,34 +96,6 @@ $this->title = vsprintf('%s | %s', [
         </div>
       </div>
 
-      <!-- Additional Overview Stats -->
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asInteger($player->getTotalKills()) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Total Kills')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-3">
-          <div class="panel panel-default text-center">
-            <div class="panel-body">
-              <div style="font-size: 2em; font-weight: bold;">
-                <?= $formatter->asInteger($player->getTotalDeaths()) ?>
-              </div>
-              <div class="text-muted">
-                <?= Html::encode(Yii::t('app', 'Total Deaths')) ?>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Performance Stats -->
       <?php if (!empty($player->performance_stats)): ?>
         <div class="panel panel-default">
