@@ -14,8 +14,6 @@ use app\models\UnregisteredPlayer3;
 use yii\helpers\Html;
 use yii\web\View;
 
-use function vsprintf;
-
 /**
  * @var UnregisteredPlayer3 $player
  * @var View $this
