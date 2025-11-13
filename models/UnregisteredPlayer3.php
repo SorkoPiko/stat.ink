@@ -352,8 +352,8 @@ final class UnregisteredPlayer3
             ->andWhere(['not', ['{{%battle_player3}}.[[name]]' => null]])
             ->andWhere(['not', ['{{%battle_player3}}.[[number]]' => null]])
             ->groupBy(['{{%battle_player3}}.[[name]]', '{{%battle_player3}}.[[number]]'])
-            ->having(['>=', 'battles_together', 3])
-            ->orderBy(['battles_together' => SORT_DESC])
+            ->having(['>=', 'COUNT(DISTINCT {{%battle3}}.[[client_uuid]])', 3])
+            ->orderBy(['COUNT(DISTINCT {{%battle3}}.[[client_uuid]])' => SORT_DESC])
             ->limit(20)
             ->all();
 
@@ -482,3 +482,4 @@ final class UnregisteredPlayer3
         ]);
     }
 }
+
