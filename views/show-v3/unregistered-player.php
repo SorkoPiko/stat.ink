@@ -286,7 +286,28 @@ $this->title = vsprintf('%s | %s', [
                   <?php foreach ($player->teammate_stats as $teammate): ?>
                     <tr>
                       <td>
-                        <?= Html::encode(sprintf('%s#%s', (string)($teammate['teammate_name'] ?? '???'), (string)($teammate['teammate_number'] ?? '????'))) ?>
+                        <?php
+                        $name = (string)($teammate['teammate_name'] ?? '???');
+                        $number = (string)($teammate['teammate_number'] ?? '????');
+                        $splashtag = $name . '#' . $number;
+                        $content = Html::encode($name) . Html::tag(
+                          'span',
+                          '#' . Html::encode($number),
+                          ['class' => 'text-muted small']
+                        );
+                        $teammatePlayer = UnregisteredPlayer3::findBySplashtagString($splashtag);
+                        if ($teammatePlayer && $teammatePlayer->hasSignificantData()) {
+                          $content = Html::a(
+                            $content,
+                            ['unregistered-player-v3/by-splashtag/' . urlencode($splashtag)],
+                            [
+                              'title' => Yii::t('app', 'View stats for {name}', ['name' => $name]),
+                              'class' => 'text-decoration-none',
+                            ]
+                          );
+                        }
+                        echo Html::tag('div', $content);
+                        ?>
                       </td>
                       <td class="text-center">
                         <?= $formatter->asInteger((int)($teammate['battles_together'] ?? 0)) ?>

@@ -325,13 +325,17 @@ final class UnregisteredPlayer3
             ->select([
                 'teammate_name' => '{{%battle_player3}}.[[name]]',
                 'teammate_number' => '{{%battle_player3}}.[[number]]',
+                'species_key' => 'MAX({{%species3}}.[[key]])',
+                'species_key' => 'MAX({{%species3}}.[[key]])',
                 'battles_together' => 'COUNT(DISTINCT {{%battle3}}.[[client_uuid]])',
                 'wins_together' => 'SUM(CASE WHEN {{%result3}}.[[is_win]] = {{%battle_player3}}.[[is_our_team]] THEN 1 ELSE 0 END)',
             ])
             ->from('{{%battle_player3}}')
             ->innerJoin('{{%battle3}}', '{{%battle_player3}}.[[battle_id]] = {{%battle3}}.[[id]]')
             ->innerJoin('{{%result3}}', '{{%battle3}}.[[result_id]] = {{%result3}}.[[id]]')
+            ->innerJoin('{{%species3}}', '{{%battle_player3}}.[[species_id]] = {{%species3}}.[[id]]')
             ->innerJoin('{{%lobby3}}', '{{%battle3}}.[[lobby_id]] = {{%lobby3}}.[[id]]')
+            ->innerJoin('{{%species3}}', '{{%battle_player3}}.[[species_id]] = {{%species3}}.[[id]]')
             ->innerJoin(['target_battles' => $battleIdsSubquery], '{{%battle3}}.[[id]] = target_battles.battle_id')
             ->innerJoin(['target_team' => '{{%battle_player3}}'], [
                 'and',
@@ -349,9 +353,9 @@ final class UnregisteredPlayer3
                 ['!=', '{{%battle_player3}}.[[name]]', $this->name],
                 ['!=', '{{%battle_player3}}.[[number]]', $this->number]
             ])
-            ->andWhere(['not', ['{{%battle_player3}}.[[name]]' => null]])
+            ->groupBy(['{{%battle_player3}}.[[name]]', '{{%battle_player3}}.[[number]]', '{{%species3}}.[[key]]'])
             ->andWhere(['not', ['{{%battle_player3}}.[[number]]' => null]])
-            ->groupBy(['{{%battle_player3}}.[[name]]', '{{%battle_player3}}.[[number]]'])
+            ->groupBy(['{{%battle_player3}}.[[name]]', '{{%battle_player3}}.[[number]]', '{{%species3}}.[[key]]'])
             ->having(['>=', 'COUNT(DISTINCT {{%battle3}}.[[client_uuid]])', 3])
             ->orderBy(['COUNT(DISTINCT {{%battle3}}.[[client_uuid]])' => SORT_DESC])
             ->limit(20)
@@ -482,4 +486,3 @@ final class UnregisteredPlayer3
         ]);
     }
 }
-
