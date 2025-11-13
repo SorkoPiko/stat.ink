@@ -295,16 +295,29 @@ $this->title = vsprintf('%s | %s', [
                           '#' . Html::encode($number),
                           ['class' => 'text-muted small']
                         );
-                        $teammatePlayer = UnregisteredPlayer3::findBySplashtagString($splashtag);
-                        if ($teammatePlayer && $teammatePlayer->hasSignificantData()) {
+
+                        $registeredUsername = UnregisteredPlayer3::getRegisteredUsername($name, $number);
+                        if ($registeredUsername) {
                           $content = Html::a(
                             $content,
-                            ['unregistered-player-v3/by-splashtag/' . urlencode($splashtag)],
+                            ['/@' . $registeredUsername . '/spl3/'],
                             [
-                              'title' => Yii::t('app', 'View stats for {name}', ['name' => $name]),
+                              'title' => Yii::t('app', 'View registered user profile for {name}', ['name' => $name]),
                               'class' => 'text-decoration-none',
                             ]
                           );
+                        } else {
+                          $teammatePlayer = UnregisteredPlayer3::findBySplashtagString($splashtag);
+                          if ($teammatePlayer && $teammatePlayer->hasSignificantData()) {
+                            $content = Html::a(
+                              $content,
+                              ['unregistered-player-v3/by-splashtag/' . urlencode($splashtag)],
+                              [
+                                'title' => Yii::t('app', 'View stats for {name}', ['name' => $name]),
+                                'class' => 'text-decoration-none',
+                              ]
+                            );
+                          }
                         }
                         echo Html::tag('div', $content);
                         ?>
