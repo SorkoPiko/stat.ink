@@ -10,31 +10,29 @@ declare(strict_types=1);
 
 namespace app\actions\api\v3;
 
-use app\components\web\Action;
+use app\actions\api\v3\traits\ApiInitializerTrait;
+use app\components\formatters\api\v3\UnregisteredPlayerApiFormatter;
 use app\models\UnregisteredPlayer3;
+use yii\base\Action;
 use yii\web\NotFoundHttpException;
 
 final class UnregisteredPlayerAction extends Action
 {
-    public function run(string $splashtag): array
+    use ApiInitializerTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        $this->apiInit();
+    }
+
+    public function run(string $splashtag, bool $full = false): array
     {
         $player = UnregisteredPlayer3::findBySplashtagString($splashtag);
 
-        if (!$player) {
-            throw new NotFoundHttpException('Unregistered player not found.');
-        }
-
-        return [
-            'name' => $player->name,
-            'number' => $player->number,
-            'total_battles' => $player->total_battles,
-            'total_wins' => $player->total_wins,
-            'win_rate' => $player->getWinRate(),
-            'disconnect_rate' => $player->getDisconnectRate(),
-            'performance_stats' => $player->performance_stats,
-            'weapon_stats' => $player->weapon_stats,
-            'lobby_stats' => $player->lobby_stats,
-            'teammate_stats' => $player->teammate_stats,
-        ];
+        return UnregisteredPlayerApiFormatter::toJson($player, $full) ?? throw new NotFoundHttpException('Unregistered player not found.');
     }
 }
