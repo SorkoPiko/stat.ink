@@ -32,6 +32,7 @@ use app\actions\api\v3\salmon\SalmonUuidListAction;
 use app\actions\api\v3\salmon\SalmonWeaponAction;
 use app\components\web\Controller;
 use yii\filters\VerbFilter;
+use yii\filters\auth\HttpBearerAuth;
 
 final class ApiV3Controller extends Controller
 {
